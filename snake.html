@@ -3,37 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game - Coquette Edition</title>
+    <title>Snake Game</title>
     <style>
         body {
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             background-color: #ffe4e1;
             margin: 0;
             font-family: 'Comic Sans MS', cursive, sans-serif;
+            flex-wrap: wrap;
+            padding: 20px;
         }
+
+        /* Left section for title and control buttons */
+        .left-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-right: 20px;
+        }
+
         h1 {
             color: #ff69b4;
             text-shadow: 2px 2px 4px #ffb6c1;
-            font-size: 3rem;
-            margin-bottom: 10px;
-        }
-        canvas {
-            background-color: #ffc0cb;
-            box-shadow: 0 0 30px #ff69b4;
-            border-radius: 20px;
+            font-size: 2rem;
             margin-bottom: 20px;
-            width: 600px;
-            height: 600px;
         }
+
         .controls {
             display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 10px;
         }
+
         .controls button {
             background-color: #ff69b4;
             color: white;
@@ -44,52 +48,136 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
+
         .controls button:hover {
             background-color: #ff1493;
         }
-        .manual-container {
-            background-color: #fff0f5;
-            padding: 10px;
-            border-radius: 15px;
-            width: 60%;
-            max-width: 400px;
-            color: #ff1493;
-            box-shadow: 0 0 15px #ffb6c1;
-            font-size: 0.9rem;
+
+        /* Right section for the canvas and direction buttons */
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        .manual-section h2 {
-            color: #ff69b4;
-            font-size: 1.2rem;
+
+        canvas {
+            background-color: #ffc0cb;
+            box-shadow: 0 0 30px #ff69b4;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 600px;
+            height: auto;
         }
-        ul {
-            list-style: heart;
-            margin-left: 20px;
+
+        .direction-controls {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
         }
-        p, li {
-            font-size: 1rem;
+
+        .direction-controls div {
+            display: flex;
+            gap: 5px;
+        }
+
+        .direction-controls button {
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .direction-controls button:hover {
+            background-color: #ff1493;
+        }
+
+        .direction-controls .top-btns {
+            justify-content: center;
+        }
+
+        .direction-controls .middle-btns {
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .direction-controls .bottom-btns {
+            justify-content: center;
+        }
+
+        /* Responsive design for smaller screens */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            .left-section {
+                align-items: center;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            .controls button {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+            .direction-controls button {
+                padding: 15px 20px;
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            .controls button {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            .direction-controls button {
+                padding: 12px 18px;
+                font-size: 1rem;
+            }
+            canvas {
+                max-width: 100%;
+                height: 300px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>✨ Snake Game - Coquette Edition ✨</h1>
-    <div class="controls">
-        <button id="startBtn">Start</button>
-        <button id="pauseBtn">Pause</button>
-        <button id="resumeBtn">Resume</button>
-        <button id="stopBtn">Stop</button>
+    <div class="left-section">
+        <h2>✨ Snake Game ✨</h2>
+        <h6>By chocpov</h6>
+        <div class="controls">
+            <button id="startBtn">Start</button>
+            <button id="pauseBtn">Pause</button>
+            <button id="resumeBtn">Resume</button>
+            <button id="stopBtn">Stop</button>
+        </div>
     </div>
-    <canvas id="gameCanvas" width="600" height="600"></canvas>
 
-    <div class="manual-container">
-        <div class="manual-section">
-            <h2>💅 Controls</h2>
-            <p>Use these chic keys to control your stylish snake:</p>
-            <ul>
-                <li>🅰️ <strong>A</strong>: Glide Left</li>
-                <li>🅆 <strong>W</strong>: Float Up</li>
-                <li>🅳 <strong>D</strong>: Slide Right</li>
-                <li>🅂 <strong>S</strong>: Drift Down</li>
-            </ul>
+    <div class="right-section">
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        <div class="direction-controls">
+            <div class="top-btns">
+                <button id="upBtn">↑</button>
+            </div>
+            <div class="middle-btns">
+                <button id="leftBtn">←</button>
+                <button id="rightBtn">→</button>
+            </div>
+            <div class="bottom-btns">
+                <button id="downBtn">↓</button>
+            </div>
         </div>
     </div>
 
@@ -102,6 +190,11 @@
             const resumeBtn = document.getElementById("resumeBtn");
             const stopBtn = document.getElementById("stopBtn");
 
+            const upBtn = document.getElementById("upBtn");
+            const leftBtn = document.getElementById("leftBtn");
+            const downBtn = document.getElementById("downBtn");
+            const rightBtn = document.getElementById("rightBtn");
+
             const box = 20;
             const canvasSize = 600;
             let snake, direction, food, score, game;
@@ -112,13 +205,9 @@
                 direction = "RIGHT";
                 food = generateFood();
                 score = 0;
-                isPaused = false;
                 clearInterval(game);
                 game = setInterval(draw, 100);
-                draw();
             }
-
-            document.addEventListener("keydown", directionHandler);
 
             function directionHandler(event) {
                 const key = event.key.toLowerCase();
@@ -127,6 +216,22 @@
                 else if (key === "d" && direction !== "LEFT") direction = "RIGHT";
                 else if (key === "s" && direction !== "UP") direction = "DOWN";
             }
+
+            // Button controls
+            upBtn.addEventListener("click", () => {
+                if (direction !== "DOWN") direction = "UP";
+            });
+            leftBtn.addEventListener("click", () => {
+                if (direction !== "RIGHT") direction = "LEFT";
+            });
+            downBtn.addEventListener("click", () => {
+                if (direction !== "UP") direction = "DOWN";
+            });
+            rightBtn.addEventListener("click", () => {
+                if (direction !== "LEFT") direction = "RIGHT";
+            });
+
+            document.addEventListener("keydown", directionHandler);
 
             function generateFood() {
                 return {
@@ -181,9 +286,7 @@
                     collision(newHead, snake)
                 ) {
                     clearInterval(game);
-                    ctx.fillStyle = "#ff69b4";
-                    ctx.font = "30px 'Comic Sans MS'";
-                    ctx.fillText("💖 Game Over! Score: " + score + " 💖", 150, 300);
+                    alert("💖 Game Over! Your final chic score: " + score + " 💖");
                 }
 
                 snake.unshift(newHead);
@@ -193,16 +296,17 @@
                 ctx.fillText("Score: " + score + " ✨", 10, 590);
             }
 
-            startBtn.addEventListener("click", initGame);
+            startBtn.addEventListener("click", () => {
+                initGame();
+                isPaused = false;
+            });
 
             pauseBtn.addEventListener("click", () => {
                 isPaused = true;
             });
 
             resumeBtn.addEventListener("click", () => {
-                if (game && isPaused) {
-                    isPaused = false;
-                }
+                isPaused = false;
             });
 
             stopBtn.addEventListener("click", () => {
