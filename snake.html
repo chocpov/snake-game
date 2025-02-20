@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game</title>
+    <title>Snake Game - Coquette Edition</title>
     <style>
         body {
             display: flex;
@@ -11,159 +11,210 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #222;
+            background-color: #ffe4e1;
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        h1 {
+            color: #ff69b4;
+            text-shadow: 2px 2px 4px #ffb6c1;
+            font-size: 3rem;
+            margin-bottom: 10px;
         }
         canvas {
-            background-color: #111;
-            box-shadow: 0 0 20px #0f0;
-            border-radius: 10px;
+            background-color: #ffc0cb;
+            box-shadow: 0 0 30px #ff69b4;
+            border-radius: 20px;
             margin-bottom: 20px;
+            width: 600px;
+            height: 600px;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .controls button {
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .controls button:hover {
+            background-color: #ff1493;
         }
         .manual-container {
-            background-color: #333;
-            padding: 20px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 600px;
-            color: #fff;
-            box-shadow: 0 0 10px #000;
-        }
-        .manual-section {
-            margin-bottom: 20px;
+            background-color: #fff0f5;
+            padding: 10px;
+            border-radius: 15px;
+            width: 60%;
+            max-width: 400px;
+            color: #ff1493;
+            box-shadow: 0 0 15px #ffb6c1;
+            font-size: 0.9rem;
         }
         .manual-section h2 {
-            color: #0f0;
+            color: #ff69b4;
+            font-size: 1.2rem;
         }
         ul {
-            list-style: disc;
+            list-style: heart;
             margin-left: 20px;
+        }
+        p, li {
+            font-size: 1rem;
         }
     </style>
 </head>
 <body>
-    <h1 style="color: #fff;">Snake Game</h1>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <h1>✨ Snake Game - Coquette Edition ✨</h1>
+    <div class="controls">
+        <button id="startBtn">Start</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="resumeBtn">Resume</button>
+        <button id="stopBtn">Stop</button>
+    </div>
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
 
     <div class="manual-container">
         <div class="manual-section">
-            <h2>1. Objective</h2>
-            <p>The goal is to control the snake, eat the red food blocks, and grow as long as possible without hitting the walls or itself.</p>
-        </div>
-
-        <div class="manual-section">
-            <h2>2. Controls</h2>
-            <p>Use the following keyboard arrows to control the snake's direction:</p>
+            <h2>💅 Controls</h2>
+            <p>Use these chic keys to control your stylish snake:</p>
             <ul>
-                <li>⬅️ <strong>Left Arrow</strong>: Move Left</li>
-                <li>⬆️ <strong>Up Arrow</strong>: Move Up</li>
-                <li>➡️ <strong>Right Arrow</strong>: Move Right</li>
-                <li>⬇️ <strong>Down Arrow</strong>: Move Down</li>
-            </ul>
-        </div>
-
-        <div class="manual-section">
-            <h2>3. Scoring System</h2>
-            <p>Each red block the snake eats adds 1 point to your score. The score is displayed at the bottom of the canvas.</p>
-        </div>
-
-        <div class="manual-section">
-            <h2>4. Game Over Conditions</h2>
-            <p>The game ends if:</p>
-            <ul>
-                <li>The snake runs into the wall.</li>
-                <li>The snake runs into its own body.</li>
-            </ul>
-            <p>An alert box will display your final score upon game over.</p>
-        </div>
-
-        <div class="manual-section">
-            <h2>5. Tips & Strategies</h2>
-            <ul>
-                <li>Plan your moves ahead to avoid trapping the snake.</li>
-                <li>Try to stay away from the edges unless necessary.</li>
-                <li>Control speed by modifying the <code>setInterval</code> timing in the JavaScript code.</li>
+                <li>🅰️ <strong>A</strong>: Glide Left</li>
+                <li>🅆 <strong>W</strong>: Float Up</li>
+                <li>🅳 <strong>D</strong>: Slide Right</li>
+                <li>🅂 <strong>S</strong>: Drift Down</li>
             </ul>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        
-        const box = 20;
-        const canvasSize = 400;
-        let snake = [{ x: 9 * box, y: 10 * box }];
-        let direction = "RIGHT";
-        let food = {
-            x: Math.floor(Math.random() * (canvasSize / box)) * box,
-            y: Math.floor(Math.random() * (canvasSize / box)) * box
-        };
-        let score = 0;
+        window.onload = function() {
+            const canvas = document.getElementById("gameCanvas");
+            const ctx = canvas.getContext("2d");
+            const startBtn = document.getElementById("startBtn");
+            const pauseBtn = document.getElementById("pauseBtn");
+            const resumeBtn = document.getElementById("resumeBtn");
+            const stopBtn = document.getElementById("stopBtn");
 
-        document.addEventListener("keydown", directionHandler);
+            const box = 20;
+            const canvasSize = 600;
+            let snake, direction, food, score, game;
+            let isPaused = false;
 
-        function directionHandler(event) {
-            if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
-            else if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
-            else if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
-            else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
-        }
+            function initGame() {
+                snake = [{ x: 9 * box, y: 10 * box }];
+                direction = "RIGHT";
+                food = generateFood();
+                score = 0;
+                isPaused = false;
+                clearInterval(game);
+                game = setInterval(draw, 100);
+                draw();
+            }
 
-        function collision(head, array) {
-            return array.some(segment => head.x === segment.x && head.y === segment.y);
-        }
+            document.addEventListener("keydown", directionHandler);
 
-        function draw() {
-            ctx.fillStyle = "#111";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            function directionHandler(event) {
+                const key = event.key.toLowerCase();
+                if (key === "a" && direction !== "RIGHT") direction = "LEFT";
+                else if (key === "w" && direction !== "DOWN") direction = "UP";
+                else if (key === "d" && direction !== "LEFT") direction = "RIGHT";
+                else if (key === "s" && direction !== "UP") direction = "DOWN";
+            }
 
-            snake.forEach((segment, index) => {
-                ctx.fillStyle = index === 0 ? "#0f0" : "#fff";
-                ctx.fillRect(segment.x, segment.y, box, box);
-            });
-
-            ctx.fillStyle = "red";
-            ctx.fillRect(food.x, food.y, box, box);
-
-            let headX = snake[0].x;
-            let headY = snake[0].y;
-
-            if (direction === "LEFT") headX -= box;
-            if (direction === "UP") headY -= box;
-            if (direction === "RIGHT") headX += box;
-            if (direction === "DOWN") headY += box;
-
-            if (headX === food.x && headY === food.y) {
-                score++;
-                food = {
+            function generateFood() {
+                return {
                     x: Math.floor(Math.random() * (canvasSize / box)) * box,
                     y: Math.floor(Math.random() * (canvasSize / box)) * box
                 };
-            } else {
-                snake.pop();
             }
 
-            const newHead = { x: headX, y: headY };
+            function collision(head, array) {
+                return array.some(segment => head.x === segment.x && head.y === segment.y);
+            }
 
-            if (
-                headX < 0 || headY < 0 ||
-                headX >= canvasSize || headY >= canvasSize ||
-                collision(newHead, snake)
-            ) {
+            function draw() {
+                if (isPaused) return;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#ffc0cb";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                snake.forEach((segment, index) => {
+                    ctx.fillStyle = index === 0 ? "#ff69b4" : "#ffb6c1";
+                    ctx.fillRect(segment.x, segment.y, box, box);
+                    ctx.strokeStyle = "#fff";
+                    ctx.strokeRect(segment.x, segment.y, box, box);
+                });
+
+                ctx.fillStyle = "#ff1493";
+                ctx.beginPath();
+                ctx.arc(food.x + box / 2, food.y + box / 2, box / 2, 0, Math.PI * 2);
+                ctx.fill();
+
+                let headX = snake[0].x;
+                let headY = snake[0].y;
+
+                if (direction === "LEFT") headX -= box;
+                if (direction === "UP") headY -= box;
+                if (direction === "RIGHT") headX += box;
+                if (direction === "DOWN") headY += box;
+
+                if (headX === food.x && headY === food.y) {
+                    score++;
+                    food = generateFood();
+                } else {
+                    snake.pop();
+                }
+
+                const newHead = { x: headX, y: headY };
+
+                if (
+                    headX < 0 || headY < 0 ||
+                    headX >= canvasSize || headY >= canvasSize ||
+                    collision(newHead, snake)
+                ) {
+                    clearInterval(game);
+                    ctx.fillStyle = "#ff69b4";
+                    ctx.font = "30px 'Comic Sans MS'";
+                    ctx.fillText("💖 Game Over! Score: " + score + " 💖", 150, 300);
+                }
+
+                snake.unshift(newHead);
+
+                ctx.fillStyle = "#ff69b4";
+                ctx.font = "20px 'Comic Sans MS'";
+                ctx.fillText("Score: " + score + " ✨", 10, 590);
+            }
+
+            startBtn.addEventListener("click", initGame);
+
+            pauseBtn.addEventListener("click", () => {
+                isPaused = true;
+            });
+
+            resumeBtn.addEventListener("click", () => {
+                if (game && isPaused) {
+                    isPaused = false;
+                }
+            });
+
+            stopBtn.addEventListener("click", () => {
                 clearInterval(game);
-                alert("Game Over! Your score: " + score);
-            }
-
-            snake.unshift(newHead);
-
-            ctx.fillStyle = "#fff";
-            ctx.font = "20px Arial";
-            ctx.fillText("Score: " + score, 10, 390);
-        }
-
-        const game = setInterval(draw, 100);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#ffc0cb";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#ff69b4";
+                ctx.font = "30px 'Comic Sans MS'";
+                ctx.fillText("Game Stopped 💖", 200, 300);
+            });
+        };
     </script>
 </body>
 </html>
