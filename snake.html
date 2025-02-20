@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            background-color: #111;
+            box-shadow: 0 0 20px #0f0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .manual-container {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            color: #fff;
+            box-shadow: 0 0 10px #000;
+        }
+        .manual-section {
+            margin-bottom: 20px;
+        }
+        .manual-section h2 {
+            color: #0f0;
+        }
+        ul {
+            list-style: disc;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: #fff;">Snake Game</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <div class="manual-container">
+        <div class="manual-section">
+            <h2>1. Objective</h2>
+            <p>The goal is to control the snake, eat the red food blocks, and grow as long as possible without hitting the walls or itself.</p>
+        </div>
+
+        <div class="manual-section">
+            <h2>2. Controls</h2>
+            <p>Use the following keyboard arrows to control the snake's direction:</p>
+            <ul>
+                <li>⬅️ <strong>Left Arrow</strong>: Move Left</li>
+                <li>⬆️ <strong>Up Arrow</strong>: Move Up</li>
+                <li>➡️ <strong>Right Arrow</strong>: Move Right</li>
+                <li>⬇️ <strong>Down Arrow</strong>: Move Down</li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h2>3. Scoring System</h2>
+            <p>Each red block the snake eats adds 1 point to your score. The score is displayed at the bottom of the canvas.</p>
+        </div>
+
+        <div class="manual-section">
+            <h2>4. Game Over Conditions</h2>
+            <p>The game ends if:</p>
+            <ul>
+                <li>The snake runs into the wall.</li>
+                <li>The snake runs into its own body.</li>
+            </ul>
+            <p>An alert box will display your final score upon game over.</p>
+        </div>
+
+        <div class="manual-section">
+            <h2>5. Tips & Strategies</h2>
+            <ul>
+                <li>Plan your moves ahead to avoid trapping the snake.</li>
+                <li>Try to stay away from the edges unless necessary.</li>
+                <li>Control speed by modifying the <code>setInterval</code> timing in the JavaScript code.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        const box = 20;
+        const canvasSize = 400;
+        let snake = [{ x: 9 * box, y: 10 * box }];
+        let direction = "RIGHT";
+        let food = {
+            x: Math.floor(Math.random() * (canvasSize / box)) * box,
+            y: Math.floor(Math.random() * (canvasSize / box)) * box
+        };
+        let score = 0;
+
+        document.addEventListener("keydown", directionHandler);
+
+        function directionHandler(event) {
+            if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+            else if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+            else if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+            else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+        }
+
+        function collision(head, array) {
+            return array.some(segment => head.x === segment.x && head.y === segment.y);
+        }
+
+        function draw() {
+            ctx.fillStyle = "#111";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            snake.forEach((segment, index) => {
+                ctx.fillStyle = index === 0 ? "#0f0" : "#fff";
+                ctx.fillRect(segment.x, segment.y, box, box);
+            });
+
+            ctx.fillStyle = "red";
+            ctx.fillRect(food.x, food.y, box, box);
+
+            let headX = snake[0].x;
+            let headY = snake[0].y;
+
+            if (direction === "LEFT") headX -= box;
+            if (direction === "UP") headY -= box;
+            if (direction === "RIGHT") headX += box;
+            if (direction === "DOWN") headY += box;
+
+            if (headX === food.x && headY === food.y) {
+                score++;
+                food = {
+                    x: Math.floor(Math.random() * (canvasSize / box)) * box,
+                    y: Math.floor(Math.random() * (canvasSize / box)) * box
+                };
+            } else {
+                snake.pop();
+            }
+
+            const newHead = { x: headX, y: headY };
+
+            if (
+                headX < 0 || headY < 0 ||
+                headX >= canvasSize || headY >= canvasSize ||
+                collision(newHead, snake)
+            ) {
+                clearInterval(game);
+                alert("Game Over! Your score: " + score);
+            }
+
+            snake.unshift(newHead);
+
+            ctx.fillStyle = "#fff";
+            ctx.font = "20px Arial";
+            ctx.fillText("Score: " + score, 10, 390);
+        }
+
+        const game = setInterval(draw, 100);
+    </script>
+</body>
+</html>
